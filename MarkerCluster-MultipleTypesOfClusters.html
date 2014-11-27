@@ -149,8 +149,42 @@
 	map.addLayer(greenMarkerClusters);
 
 
+	//--CREATE RED CLUSTERS---------------------------------------
+	// geojson style and popup
+	var RedGeoJson = L.geoJson(geojsonRedSample, {
+		style: function (feature) {
+			return {color: feature.properties.color};
+		},
+		onEachFeature: function (feature, layer) {
+			var popupText = 'lat: '+feature.geometry.coordinates[1]+'lng: '+feature.geometry.coordinates[0]+', value: '+feature.properties.value;
+			if (feature.properties.color) {
+				popupText += '<br/>color: ' + feature.properties.color
+			}
+			layer.bindPopup(popupText);
+		}
+	});
+	// red marker cluster layer
+	var redMarkerClusters = L.markerClusterGroup({
+		maxClusterRadius: 120,
 
+		iconCreateFunction: function (cluster) {
+		var childCount = cluster.getChildCount();
+			var c = ' marker-cluster-';
+			if (childCount < 10) {
+				c += 'small_red';
+			} else if (childCount < 100) {
+				c += 'medium_red';
+			} else {
+				c += 'large_red';
+			}
+			return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
+		},
 
+		//Disable all of the defaults:
+		spiderfyOnMaxZoom: false, showCoverageOnHover: true, zoomToBoundsOnClick: true
+	});
+	redMarkerClusters.addLayer(RedGeoJson);
+	map.addLayer(redMarkerClusters);
 
 
 
