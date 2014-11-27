@@ -16,6 +16,8 @@
 	<link rel="stylesheet" type="text/css" href="bower_components/leaflet.markercluster/dist/MarkerCluster.css">
 	<script type="text/javascript" src="bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
+	<!-- bootstrap -->
+	<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css">
 	<!-- my styles -->
 	<style type="text/css">
 
@@ -38,11 +40,21 @@
 		.marker-cluster-large_green      {background-color: rgba(55, 140, 55, 0.6);}
 		.marker-cluster-large_green div  {background-color: rgba(55, 140, 55, 0.6);}
 
+		#buttonSec{position: fixed;z-index: 1000;bottom: 4px;}
 	</style>
 </head>
 <body>
 
 <div id="map"></div>
+
+<div id="buttonSec">
+	<button id="showHideGreenCluster" class="btn btn-default" onclick="showHideGreenClusters()">
+		Hide Green Clusters
+	</button>
+	<button id="showHideRedCluster"   class="btn btn-default" onclick="showHideRedClusters()">  
+		Hide Red Clusters
+	</button>
+</div>
 
 
 <script type="text/javascript">
@@ -112,79 +124,117 @@
 
 
 	//--CREATE GREEN CLUSTERS---------------------------------------
-	// geojson style and popup
-	var GreenGeoJson = L.geoJson(geojsonGreenSample, {
-		style: function (feature) {
-			return {color: feature.properties.color};
-		},
-		onEachFeature: function (feature, layer) {
-			var popupText = 'lat: '+feature.geometry.coordinates[1]+'lng: '+feature.geometry.coordinates[0]+', value: '+feature.properties.value;
-			if (feature.properties.color) {
-				popupText += '<br/>color: ' + feature.properties.color
+	function addGreenMarkerClusters(){
+		// geojson style and popup
+		var GreenGeoJson = L.geoJson(geojsonGreenSample, {
+			style: function (feature) {
+				return {color: feature.properties.color};
+			},
+			onEachFeature: function (feature, layer) {
+				var popupText = 'lat: '+feature.geometry.coordinates[1]+'lng: '+feature.geometry.coordinates[0]+', value: '+feature.properties.value;
+				if (feature.properties.color) {
+					popupText += '<br/>color: ' + feature.properties.color
+				}
+				layer.bindPopup(popupText);
 			}
-			layer.bindPopup(popupText);
-		}
-	});
-	// green marker cluster layer
-	var greenMarkerClusters = L.markerClusterGroup({
-		maxClusterRadius: 120,
+		});
+		// green marker cluster layer
+		var GreenMarkerClusters = L.markerClusterGroup({
+			maxClusterRadius: 120,
 
-		iconCreateFunction: function (cluster) {
-		var childCount = cluster.getChildCount();
-			var c = ' marker-cluster-';
-			if (childCount < 10) {
-				c += 'small_green';
-			} else if (childCount < 100) {
-				c += 'medium_green';
-			} else {
-				c += 'large_green';
-			}
-			return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
-		},
+			iconCreateFunction: function (cluster) {
+			var childCount = cluster.getChildCount();
+				var c = ' marker-cluster-';
+				if (childCount < 10) {
+					c += 'small_green';
+				} else if (childCount < 100) {
+					c += 'medium_green';
+				} else {
+					c += 'large_green';
+				}
+				return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
+			},
 
-		//Disable all of the defaults:
-		spiderfyOnMaxZoom: false, showCoverageOnHover: true, zoomToBoundsOnClick: true
-	});
-	greenMarkerClusters.addLayer(GreenGeoJson);
-	map.addLayer(greenMarkerClusters);
+			//Disable all of the defaults:
+			spiderfyOnMaxZoom: false, showCoverageOnHover: true, zoomToBoundsOnClick: true
+		});
+		GreenMarkerClusters.addLayer(GreenGeoJson);
+		map.addLayer(GreenMarkerClusters);
+		return GreenMarkerClusters;
+	}
+	var greenMarkerClusters = addGreenMarkerClusters();
+
 
 
 	//--CREATE RED CLUSTERS---------------------------------------
-	// geojson style and popup
-	var RedGeoJson = L.geoJson(geojsonRedSample, {
-		style: function (feature) {
-			return {color: feature.properties.color};
-		},
-		onEachFeature: function (feature, layer) {
-			var popupText = 'lat: '+feature.geometry.coordinates[1]+'lng: '+feature.geometry.coordinates[0]+', value: '+feature.properties.value;
-			if (feature.properties.color) {
-				popupText += '<br/>color: ' + feature.properties.color
+	function addRedMarkerClusters(){
+		// geojson style and popup
+		var RedGeoJson = L.geoJson(geojsonRedSample, {
+			style: function (feature) {
+				return {color: feature.properties.color};
+			},
+			onEachFeature: function (feature, layer) {
+				var popupText = 'lat: '+feature.geometry.coordinates[1]+'lng: '+feature.geometry.coordinates[0]+', value: '+feature.properties.value;
+				if (feature.properties.color) {
+					popupText += '<br/>color: ' + feature.properties.color
+				}
+				layer.bindPopup(popupText);
 			}
-			layer.bindPopup(popupText);
+		});
+		// red marker cluster layer
+		var RedMarkerClusters = L.markerClusterGroup({
+			maxClusterRadius: 120,
+
+			iconCreateFunction: function (cluster) {
+			var childCount = cluster.getChildCount();
+				var c = ' marker-cluster-';
+				if (childCount < 10) {
+					c += 'small_red';
+				} else if (childCount < 100) {
+					c += 'medium_red';
+				} else {
+					c += 'large_red';
+				}
+				return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
+			},
+
+			//Disable all of the defaults:
+			spiderfyOnMaxZoom: false, showCoverageOnHover: true, zoomToBoundsOnClick: true
+		});
+		RedMarkerClusters.addLayer(RedGeoJson);
+		map.addLayer(RedMarkerClusters);
+		return RedMarkerClusters;
+	}
+	var redMarkerClusters = addRedMarkerClusters();
+
+
+
+
+
+	//--Show/Hide Button Toggle------------------------------
+	function showHideGreenClusters(){
+		if (greenMarkerClusters != null){
+			$("#showHideGreenCluster").removeClass("btn-default").addClass("btn-info").text("Show Green Clusters");
+			map.removeLayer(greenMarkerClusters);
+			greenMarkerClusters = null;
+		} else {
+			$("#showHideGreenCluster").removeClass("btn-info").addClass("btn-default").text("Hide Green Clusters");
+			greenMarkerClusters = addGreenMarkerClusters();
 		}
-	});
-	// red marker cluster layer
-	var redMarkerClusters = L.markerClusterGroup({
-		maxClusterRadius: 120,
+	}
+	function showHideRedClusters(){
+		if (redMarkerClusters != null){
+			$("#showHideRedCluster").removeClass("btn-default").addClass("btn-info").text("Show Red Clusters");
+			map.removeLayer(redMarkerClusters);
+			redMarkerClusters = null;
+		} else {
+			$("#showHideRedCluster").removeClass("btn-info").addClass("btn-default").text("Hide Red Clusters");
+			redMarkerClusters = addRedMarkerClusters();
+		}
+	}
 
-		iconCreateFunction: function (cluster) {
-		var childCount = cluster.getChildCount();
-			var c = ' marker-cluster-';
-			if (childCount < 10) {
-				c += 'small_red';
-			} else if (childCount < 100) {
-				c += 'medium_red';
-			} else {
-				c += 'large_red';
-			}
-			return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
-		},
 
-		//Disable all of the defaults:
-		spiderfyOnMaxZoom: false, showCoverageOnHover: true, zoomToBoundsOnClick: true
-	});
-	redMarkerClusters.addLayer(RedGeoJson);
-	map.addLayer(redMarkerClusters);
+
 
 
 
